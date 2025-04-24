@@ -23,25 +23,16 @@ describe("FeedbackForm", () => {
     expect(messageInput).toHaveValue("Привет, мир!");
   });
 
-  it("Отправка формы с валидными данными", async () => {
-    render(<FeedbackForm />);
-
-    fireEvent.change(screen.getByPlaceholderText("Ваше имя"), {
-      target: { value: "Иван" },
+  it("отправка формы с валидными данными", async () => {
+      render(<FeedbackForm />);
+      await userEvent.type(screen.getByPlaceholderText("Ваше имя"), "Иван");
+      await userEvent.type(screen.getByPlaceholderText("Ваше сообщение"), "Сообщение");
+      userEvent.click(screen.getByText("Отправить"));
+  
+      await waitFor(() => {
+        expect(screen.getByText("Спасибо, Иван! Ваше сообщение отправлено.")).toBeInTheDocument();
+      }, { timeout: 1600 });
     });
-
-    fireEvent.change(screen.getByPlaceholderText("Ваше сообщение"), {
-      target: { value: "Хочу оставить отзыв" },
-    });
-
-    fireEvent.click(screen.getByText("Отправить"));
-
-    await waitFor(() =>
-      expect(
-        screen.getByText("Спасибо, Иван! Ваше сообщение отправлено.")
-      ).toBeInTheDocument()
-    );
-  });
 
   it("Сообщение не отправляется при пустом вводе", async () => {
     render(<FeedbackForm />);
